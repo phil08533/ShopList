@@ -26,11 +26,10 @@ export default function App() {
   } = usePantry();
 
   const {
-    plan,
-    people,
+    getWeekPlan,
     setMeal,
-    clearDay,
-    clearAll,
+    clearWeek,
+    people,
     setPeople,
   } = useWeeklyPlan();
 
@@ -69,9 +68,9 @@ export default function App() {
             addShoppingItem={addShoppingItem}
             shoppingList={state.shoppingList}
             people={people}
-            plan={plan}
+            getWeekPlan={getWeekPlan}
             setMeal={setMeal}
-            clearAll={clearAll}
+            clearWeek={clearWeek}
             setPeople={setPeople}
           />
         )}

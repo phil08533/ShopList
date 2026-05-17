@@ -2,74 +2,73 @@ import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'smart_pantry_meals_v1';
 
-const DAYS = 7;
-
 function buildEmptyPlan() {
-  return Array.from({ length: DAYS }, () => ({
+  return Array.from({ length: 7 }, () => ({
     breakfast: null,
     lunch: null,
     dinner: null,
   }));
 }
 
-function loadPlan() {
+export function getMondayKey(weekOffset = 0) {
+  const today = new Date();
+  const dow = today.getDay();
+  const mondayDiff = dow === 0 ? -6 : 1 - dow;
+  const mon = new Date(today);
+  mon.setDate(today.getDate() + mondayDiff + weekOffset * 7);
+  return mon.toISOString().slice(0, 10);
+}
+
+function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { plan: buildEmptyPlan(), people: 2 };
+    if (!raw) return { plans: {}, people: 2 };
     const parsed = JSON.parse(raw);
-    // Ensure plan always has 7 days
-    const plan = Array.from({ length: DAYS }, (_, i) =>
-      parsed.plan?.[i] ?? { breakfast: null, lunch: null, dinner: null }
-    );
-    return { plan, people: parsed.people ?? 2 };
+    // Migrate old single-plan format
+    if (Array.isArray(parsed.plan)) {
+      const weekKey = getMondayKey(0);
+      return { plans: { [weekKey]: parsed.plan }, people: parsed.people ?? 2 };
+    }
+    return { plans: parsed.plans ?? {}, people: parsed.people ?? 2 };
   } catch {
-    return { plan: buildEmptyPlan(), people: 2 };
+    return { plans: {}, people: 2 };
   }
 }
 
 export function useWeeklyPlan() {
-  const [state, setState] = useState(() => loadPlan());
+  const [state, setState] = useState(loadState);
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      // quota exceeded — silently fail
-    }
+    } catch {}
   }, [state]);
 
-  const setMeal = useCallback((dayIndex, slot, mealEntry) => {
+  const getWeekPlan = useCallback(
+    (weekKey) => state.plans[weekKey] ?? buildEmptyPlan(),
+    [state.plans]
+  );
+
+  const setMeal = useCallback((weekKey, dayIndex, slot, entry) => {
     setState(prev => {
-      const plan = prev.plan.map((day, i) =>
-        i === dayIndex ? { ...day, [slot]: mealEntry } : day
+      const week = prev.plans[weekKey] ?? buildEmptyPlan();
+      const updated = week.map((day, i) =>
+        i === dayIndex ? { ...day, [slot]: entry } : day
       );
-      return { ...prev, plan };
+      return { ...prev, plans: { ...prev.plans, [weekKey]: updated } };
     });
   }, []);
 
-  const clearDay = useCallback((dayIndex) => {
-    setState(prev => {
-      const plan = prev.plan.map((day, i) =>
-        i === dayIndex ? { breakfast: null, lunch: null, dinner: null } : day
-      );
-      return { ...prev, plan };
-    });
-  }, []);
-
-  const clearAll = useCallback(() => {
-    setState(prev => ({ ...prev, plan: buildEmptyPlan() }));
+  const clearWeek = useCallback((weekKey) => {
+    setState(prev => ({
+      ...prev,
+      plans: { ...prev.plans, [weekKey]: buildEmptyPlan() },
+    }));
   }, []);
 
   const setPeople = useCallback((n) => {
     setState(prev => ({ ...prev, people: Math.max(1, n) }));
   }, []);
 
-  return {
-    plan: state.plan,
-    people: state.people,
-    setMeal,
-    clearDay,
-    clearAll,
-    setPeople,
-  };
+  return { getWeekPlan, setMeal, clearWeek, people: state.people, setPeople };
 }
