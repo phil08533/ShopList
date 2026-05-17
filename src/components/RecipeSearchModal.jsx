@@ -116,8 +116,8 @@ export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
     }));
 
     return (
-      <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-        <div className="w-full max-w-lg bg-white rounded-t-2xl flex flex-col" style={{ maxHeight: '92vh' }}>
+      <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/40">
+        <div className="w-full max-w-lg bg-white rounded-t-2xl flex flex-col" style={{ maxHeight: '92dvh' }}>
           <div className="flex items-center gap-1 px-3 pt-4 pb-3 flex-shrink-0 border-b border-gray-100">
             <button
               onClick={() => setView('search')}
@@ -187,7 +187,10 @@ export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
             </div>
           </div>
 
-          <div className="flex-shrink-0 px-4 py-3 border-t border-gray-100 bg-white">
+          <div
+            className="flex-shrink-0 px-4 pt-3 border-t border-gray-100 bg-white"
+            style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+          >
             <button
               onClick={handleAdd}
               className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-colors"
@@ -205,8 +208,8 @@ export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
   const showPrompt = !query.trim() && !activeCategory;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-      <div className="w-full max-w-lg bg-white rounded-t-2xl flex flex-col" style={{ maxHeight: '90vh' }}>
+    <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/40">
+      <div className="w-full max-w-lg bg-white rounded-t-2xl flex flex-col" style={{ maxHeight: '90dvh' }}>
         <div className="flex items-center justify-between px-4 pt-4 pb-2 flex-shrink-0">
           <h2 className="text-lg font-bold text-gray-800">Find a Recipe</h2>
           <button
