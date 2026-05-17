@@ -4,7 +4,9 @@ import KitchenPage from './pages/KitchenPage';
 import ShoppingPage from './pages/ShoppingPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import RecipesPage from './pages/RecipesPage';
 import { usePantry } from './hooks/usePantry';
+import { useWeeklyPlan } from './hooks/useWeeklyPlan';
 
 export default function App() {
   const [tab, setTab] = useState('kitchen');
@@ -22,6 +24,15 @@ export default function App() {
     updateSettings,
     importState,
   } = usePantry();
+
+  const {
+    plan,
+    people,
+    setMeal,
+    clearDay,
+    clearAll,
+    setPeople,
+  } = useWeeklyPlan();
 
   const handleAddToShopping = (item) => {
     const alreadyOnList = state.shoppingList.some(s => s.kitchenId === item.kitchenId);
@@ -50,6 +61,18 @@ export default function App() {
             onAdd={(item) => addShoppingItem(item)}
             onMoveToKitchen={moveCheckedToKitchen}
             onClearChecked={clearCheckedFromShopping}
+          />
+        )}
+        {tab === 'meals' && (
+          <RecipesPage
+            kitchen={state.kitchen}
+            addShoppingItem={addShoppingItem}
+            shoppingList={state.shoppingList}
+            people={people}
+            plan={plan}
+            setMeal={setMeal}
+            clearAll={clearAll}
+            setPeople={setPeople}
           />
         )}
         {tab === 'analytics' && (

@@ -1,8 +1,9 @@
-import { ShoppingCart, Home, BarChart2, Settings } from 'lucide-react';
+import { ShoppingCart, Home, BarChart2, Settings, UtensilsCrossed } from 'lucide-react';
 
 const tabs = [
   { id: 'kitchen', label: 'Kitchen', Icon: Home },
   { id: 'shopping', label: 'Shopping', Icon: ShoppingCart },
+  { id: 'meals', label: 'Meals', Icon: UtensilsCrossed },
   { id: 'analytics', label: 'Analytics', Icon: BarChart2 },
   { id: 'settings', label: 'Settings', Icon: Settings },
 ];
