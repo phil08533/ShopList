@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Search, Loader2, ChevronLeft, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { X, Search, Loader2, ChevronLeft, ChevronDown, ChevronUp, Plus, Heart } from 'lucide-react';
 import {
   searchMeals,
   getCategories,
@@ -9,7 +9,7 @@ import {
   scaleMeasure,
 } from '../utils/mealdb';
 
-export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
+export default function RecipeSearchModal({ onClose, onAddToPlan, people, favorites = [], toggleFavorite, isFavorite }) {
   // Single modal, two views: 'search' | 'detail'
   const [view, setView] = useState('search');
 
@@ -66,6 +66,10 @@ export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
     setActiveCategory(cat);
     setQuery('');
     setError(null);
+    if (cat === '__favorites__') {
+      setResults(favorites);
+      return;
+    }
     setLoadingResults(true);
     try {
       setResults(await getMealsByCategory(cat));
@@ -75,7 +79,7 @@ export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
     } finally {
       setLoadingResults(false);
     }
-  }, [activeCategory]);
+  }, [activeCategory, favorites]);
 
   const handleMealTap = useCallback(async (mealId) => {
     setLoadingDetail(true);
@@ -128,6 +132,15 @@ export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
             <h2 className="text-sm font-bold text-gray-800 flex-1 truncate px-1">
               {selectedMeal.strMeal}
             </h2>
+            <button
+              onClick={() => toggleFavorite?.(selectedMeal)}
+              className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+            >
+              <Heart
+                size={20}
+                className={isFavorite?.(selectedMeal.idMeal) ? 'fill-red-500 text-red-500' : 'text-gray-400'}
+              />
+            </button>
             <button
               onClick={onClose}
               className="p-2 rounded-xl text-gray-400 hover:bg-gray-100 transition-colors"
@@ -241,6 +254,19 @@ export default function RecipeSearchModal({ onClose, onAddToPlan, people }) {
             </div>
           ) : (
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {favorites.length > 0 && (
+                <button
+                  onClick={() => handleCategory('__favorites__')}
+                  className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+                    activeCategory === '__favorites__'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-red-50 text-red-500 hover:bg-red-100'
+                  }`}
+                >
+                  <Heart size={11} className={activeCategory === '__favorites__' ? 'fill-white text-white' : 'fill-red-500 text-red-500'} />
+                  Saved
+                </button>
+              )}
               {categories.map(cat => (
                 <button
                   key={cat.idCategory}

@@ -150,6 +150,19 @@ function groupIngredients(plan, people) {
   return Object.values(groups).sort((a, b) => a.displayName.localeCompare(b.displayName));
 }
 
+// Split a display measure like "2 lb" or "3/4 cup" into { qty, unit }
+function splitMeasure(measure) {
+  if (!measure) return { qty: 1, unit: 'as needed' };
+  const t = measure.trim();
+  const m = t.match(/^(\d+)\s+(\d+)\/(\d+)\s*(.*)/);
+  if (m) return { qty: parseFloat(m[1]) + parseInt(m[2]) / parseInt(m[3]), unit: m[4].trim() || 'item(s)' };
+  const f = t.match(/^(\d+)\/(\d+)\s*(.*)/);
+  if (f) return { qty: parseInt(f[1]) / parseInt(f[2]), unit: f[3].trim() || 'item(s)' };
+  const n = t.match(/^(\d+\.?\d*)\s*(.*)/);
+  if (n) return { qty: parseFloat(n[1]), unit: n[2].trim() || 'item(s)' };
+  return { qty: 1, unit: t };
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToShoppingList, onClose }) {
@@ -182,10 +195,11 @@ export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToS
 
   const handleAddMissing = () => {
     toBuyItems.forEach(item => {
+      const { qty, unit } = splitMeasure(item.netMeasure);
       onAddToShoppingList({
         name: item.displayName,
-        quantity: 1,
-        unit: item.netMeasure || 'as needed',
+        quantity: qty,
+        unit,
         category: 'Other',
         note: `For: ${item.meals.join(', ')}`,
       });

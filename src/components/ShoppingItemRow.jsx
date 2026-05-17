@@ -1,6 +1,9 @@
 import { Trash2 } from 'lucide-react';
 
 export default function ShoppingItemRow({ item, onToggle, onRemove, shoppingMode }) {
+  const faded = item.checked ? 'line-through text-gray-400' : '';
+  const hasAmount = item.quantity != null && item.unit && item.unit !== 'item(s)';
+
   return (
     <div
       className={`flex items-center gap-3 bg-white rounded-xl px-4 py-3 border transition-colors ${
@@ -11,9 +14,7 @@ export default function ShoppingItemRow({ item, onToggle, onRemove, shoppingMode
         <button
           onClick={() => onToggle(item.id)}
           className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-            item.checked
-              ? 'bg-emerald-500 border-emerald-500 text-white'
-              : 'border-gray-300'
+            item.checked ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300'
           }`}
         >
           {item.checked && (
@@ -27,10 +28,18 @@ export default function ShoppingItemRow({ item, onToggle, onRemove, shoppingMode
       )}
 
       <div className="flex-1 min-w-0">
-        <p className={`font-medium text-sm ${item.checked ? 'line-through text-gray-400' : 'text-gray-900'}`}>
-          {item.name}
-        </p>
-        {item.category && (
+        <div className="flex items-baseline gap-1.5 flex-wrap">
+          <p className={`font-medium text-sm ${faded || 'text-gray-900'}`}>{item.name}</p>
+          {hasAmount && (
+            <span className={`text-sm ${item.checked ? 'line-through text-gray-300' : 'text-gray-500'}`}>
+              — {item.quantity} {item.unit}
+            </span>
+          )}
+        </div>
+        {item.note && (
+          <p className="text-xs text-gray-400 mt-0.5">{item.note}</p>
+        )}
+        {!item.note && item.category && (
           <p className="text-xs text-gray-400">{item.category}</p>
         )}
       </div>
