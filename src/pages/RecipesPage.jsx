@@ -3,6 +3,7 @@ import { Plus, X, Trash2, ShoppingCart, Minus, ChevronLeft, ChevronRight } from 
 import RecipeSearchModal from '../components/RecipeSearchModal';
 import WeekIngredientsSummary from '../components/WeekIngredientsSummary';
 import { getMondayKey } from '../hooks/useWeeklyPlan';
+import { useFavorites } from '../hooks/useFavorites';
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SLOTS = ['breakfast', 'lunch', 'dinner'];
@@ -49,6 +50,7 @@ export default function RecipesPage({
   const [weekOffset, setWeekOffset] = useState(0);
   const [searchTarget, setSearchTarget] = useState(null); // { dayIndex, slot }
   const [showSummary, setShowSummary] = useState(false);
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
   const weekKey = getMondayKey(weekOffset);
   const plan = getWeekPlan(weekKey);
@@ -213,6 +215,9 @@ export default function RecipesPage({
           onClose={() => setSearchTarget(null)}
           onAddToPlan={handleAddToPlan}
           people={people}
+          favorites={favorites}
+          toggleFavorite={toggleFavorite}
+          isFavorite={isFavorite}
         />
       )}
 
