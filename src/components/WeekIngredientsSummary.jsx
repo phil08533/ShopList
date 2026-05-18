@@ -1,6 +1,7 @@
 import { X, CheckCircle, XCircle, AlertCircle, ShoppingCart } from 'lucide-react';
 import { scaleMeasure } from '../utils/mealdb';
 import { convertMeasure } from '../utils/units';
+import { normalizeName } from '../utils/normalize';
 
 const SLOTS = ['breakfast', 'lunch', 'dinner'];
 
@@ -26,18 +27,6 @@ function normalizeUnit(u) {
   return UNIT_MAP[u?.toLowerCase().trim()] ?? u?.toLowerCase().trim() ?? '';
 }
 
-// ── Name normalization (basic plural → singular) ──────────────────────────────
-
-function normalizeName(name) {
-  let s = name.toLowerCase().trim().replace(/\s+/g, ' ');
-  if (s.length > 4) {
-    if (s.endsWith('ies')) s = s.slice(0, -3) + 'y';
-    else if (s.endsWith('ves')) s = s.slice(0, -3) + 'f';
-    else if (s.endsWith('es') && !s.endsWith('uses') && !s.endsWith('oses') && !s.endsWith('ases')) s = s.slice(0, -2);
-    else if (s.endsWith('s') && !s.endsWith('ss')) s = s.slice(0, -1);
-  }
-  return s;
-}
 
 // ── Measure parsing ───────────────────────────────────────────────────────────
 
