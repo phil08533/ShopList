@@ -4,6 +4,7 @@ import InventoryCard from '../components/InventoryCard';
 import AddItemModal from '../components/AddItemModal';
 import { CATEGORIES } from '../data/library';
 import { stockStatus } from '../utils/prediction';
+import { normalizeName } from '../utils/normalize';
 
 export default function KitchenPage({
   kitchen,
@@ -11,6 +12,7 @@ export default function KitchenPage({
   onUpdate,
   onRemove,
   onAddToShopping,
+  weeklyUsage = {},
 }) {
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -19,6 +21,8 @@ export default function KitchenPage({
   const [filterStatus, setFilterStatus] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
 
+  const getUsage = (item) => weeklyUsage[normalizeName(item.name)] ?? null;
+
   const filtered = useMemo(() => {
     let items = kitchen;
     if (search.trim()) {
@@ -26,11 +30,11 @@ export default function KitchenPage({
       items = items.filter(i => i.name.toLowerCase().includes(q));
     }
     if (filterCat !== 'All') items = items.filter(i => i.category === filterCat);
-    if (filterStatus === 'Low') items = items.filter(i => stockStatus(i) === 'low');
-    if (filterStatus === 'Critical') items = items.filter(i => stockStatus(i) === 'critical');
-    if (filterStatus === 'Good') items = items.filter(i => stockStatus(i) === 'good');
+    if (filterStatus === 'Low') items = items.filter(i => stockStatus(i, weeklyUsage[normalizeName(i.name)]) === 'low');
+    if (filterStatus === 'Critical') items = items.filter(i => stockStatus(i, weeklyUsage[normalizeName(i.name)]) === 'critical');
+    if (filterStatus === 'Good') items = items.filter(i => stockStatus(i, weeklyUsage[normalizeName(i.name)]) === 'good');
     return items;
-  }, [kitchen, search, filterCat, filterStatus]);
+  }, [kitchen, search, filterCat, filterStatus, weeklyUsage]);
 
   const usedCategories = useMemo(() => {
     const cats = [...new Set(kitchen.map(i => i.category))].sort();
@@ -61,8 +65,8 @@ export default function KitchenPage({
     });
   };
 
-  const criticalCount = kitchen.filter(i => stockStatus(i) === 'critical').length;
-  const lowCount = kitchen.filter(i => stockStatus(i) === 'low').length;
+  const criticalCount = kitchen.filter(i => stockStatus(i, getUsage(i)) === 'critical').length;
+  const lowCount = kitchen.filter(i => stockStatus(i, getUsage(i)) === 'low').length;
 
   return (
     <div className="flex flex-col h-full">
@@ -70,7 +74,7 @@ export default function KitchenPage({
       <div className="bg-white border-b border-gray-100 px-4 pt-12 pb-3">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Kitchen</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Pantry</h1>
             <p className="text-sm text-gray-400">{kitchen.length} items tracked</p>
           </div>
           <button
@@ -154,7 +158,7 @@ export default function KitchenPage({
             <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4">
               <span className="text-3xl">🥦</span>
             </div>
-            <h3 className="font-semibold text-gray-700 mb-1">Your kitchen is empty</h3>
+            <h3 className="font-semibold text-gray-700 mb-1">Your pantry is empty</h3>
             <p className="text-sm text-gray-400 max-w-xs">
               Tap the + button to add your first item, or search from the built-in library of 100+ common foods.
             </p>
@@ -173,6 +177,7 @@ export default function KitchenPage({
                 onRemove={onRemove}
                 onAddToShopping={handleAddToShopping}
                 onAdjustQty={(id, qty) => onUpdate(id, { quantity: qty })}
+                mealUsage={getUsage(item)}
               />
             ))}
           </div>

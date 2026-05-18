@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, X, Trash2, ShoppingCart, Minus, ChevronLeft, ChevronRight } from 'lucide-react';
 import RecipeSearchModal from '../components/RecipeSearchModal';
 import WeekIngredientsSummary from '../components/WeekIngredientsSummary';
+import PlanRecipeSheet from '../components/PlanRecipeSheet';
 import { getMondayKey } from '../hooks/useWeeklyPlan';
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -57,6 +58,7 @@ export default function RecipesPage({
   const [weekOffset, setWeekOffset] = useState(0);
   const [searchTarget, setSearchTarget] = useState(null); // { dayIndex, slot }
   const [showSummary, setShowSummary] = useState(false);
+  const [viewMeal, setViewMeal] = useState(null); // { meal, dayIndex, slot }
 
   const weekKey = getMondayKey(weekOffset);
   const plan = getWeekPlan(weekKey);
@@ -183,14 +185,18 @@ export default function RecipesPage({
                       </span>
                       {meal ? (
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <img
-                            src={meal.thumb}
-                            alt={meal.mealName}
-                            className="w-9 h-9 rounded-lg object-cover flex-shrink-0"
-                          />
-                          <span className="text-sm font-medium text-gray-800 flex-1 truncate">
-                            {meal.mealName}
-                          </span>
+                          <button
+                            onClick={() => setViewMeal({ meal, dayIndex, slot })}
+                            className="flex items-center gap-2 flex-1 min-w-0 text-left"
+                          >
+                            {meal.thumb
+                              ? <img src={meal.thumb} alt={meal.mealName} className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
+                              : <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-600 font-bold text-sm">{meal.mealName.charAt(0)}</div>
+                            }
+                            <span className="text-sm font-medium text-gray-800 flex-1 truncate">
+                              {meal.mealName}
+                            </span>
+                          </button>
                           <button
                             onClick={() => handleRemoveMeal(dayIndex, slot)}
                             className="p-1 text-gray-300 hover:text-red-400 transition-colors flex-shrink-0"
@@ -229,6 +235,15 @@ export default function RecipesPage({
           updateCustomRecipe={updateCustomRecipe}
           deleteCustomRecipe={deleteCustomRecipe}
           kitchen={kitchen}
+        />
+      )}
+
+      {viewMeal && (
+        <PlanRecipeSheet
+          meal={viewMeal.meal}
+          people={people}
+          onClose={() => setViewMeal(null)}
+          onRemove={() => { handleRemoveMeal(viewMeal.dayIndex, viewMeal.slot); setViewMeal(null); }}
         />
       )}
 

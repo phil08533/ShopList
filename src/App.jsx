@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import NavBar from './components/NavBar';
 import KitchenPage from './pages/KitchenPage';
 import ShoppingPage from './pages/ShoppingPage';
@@ -9,6 +9,7 @@ import { usePantry } from './hooks/usePantry';
 import { useWeeklyPlan } from './hooks/useWeeklyPlan';
 import { useFavorites } from './hooks/useFavorites';
 import { useCustomRecipes } from './hooks/useCustomRecipes';
+import { computeWeeklyUsage } from './utils/mealUsage';
 
 const FSA_SUPPORTED = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
 
@@ -185,6 +186,11 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [state, plans, people, favorites, customRecipes, autoSave]);
 
+  const weeklyUsage = useMemo(
+    () => computeWeeklyUsage(plans, people),
+    [plans, people]
+  );
+
   const handleAddToShopping = (item) => {
     const alreadyOnList = state.shoppingList.some(s => s.kitchenId === item.kitchenId);
     if (!alreadyOnList) addShoppingItem(item);
@@ -200,6 +206,7 @@ export default function App() {
             onUpdate={updateKitchenItem}
             onRemove={removeKitchenItem}
             onAddToShopping={handleAddToShopping}
+            weeklyUsage={weeklyUsage}
           />
         )}
         {tab === 'shopping' && (
