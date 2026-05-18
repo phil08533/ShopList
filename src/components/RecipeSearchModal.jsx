@@ -232,6 +232,11 @@ export default function RecipeSearchModal({
                       {selectedMeal._pantryMatch.matched}/{selectedMeal._pantryMatch.total} in pantry
                     </span>
                   )}
+                  {selectedMeal.calories && (
+                    <span className="px-2.5 py-0.5 bg-orange-50 text-orange-600 text-xs font-medium rounded-full">
+                      {Math.round(selectedMeal.calories * scaleFactor)} cal
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="text-sm font-semibold text-gray-700 mb-2">

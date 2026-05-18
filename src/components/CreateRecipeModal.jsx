@@ -10,6 +10,7 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
   const [name, setName]           = useState(initial?.strMeal ?? '');
   const [category, setCategory]   = useState(initial?.strCategory ?? 'Miscellaneous');
   const [serves, setServes]       = useState(initial?.serves ?? 4);
+  const [calories, setCalories]   = useState(initial?.calories ?? '');
   const [instructions, setInstructions] = useState(initial?.strInstructions ?? '');
   const [ingredients, setIngredients] = useState(
     initial?._ingredients?.length ? initial._ingredients : [{ name: '', measure: '' }]
@@ -27,6 +28,7 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
       strInstructions: instructions.trim(),
       strMealThumb: null,
       serves: Math.max(1, Number(serves) || 4),
+      calories: calories ? Math.round(Number(calories)) : null,
       _ingredients: ingredients.filter(r => r.name.trim()),
     });
   };
@@ -59,12 +61,16 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Serves</label>
-              <input
-                type="number" min={1} max={20} value={serves}
-                onChange={e => setServes(e.target.value)}
-                className={input}
-              />
+              <input type="number" min={1} max={20} value={serves}
+                onChange={e => setServes(e.target.value)} className={input} />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Calories per serving (optional)</label>
+            <input type="number" min={0} value={calories}
+              onChange={e => setCalories(e.target.value)}
+              placeholder="e.g. 450" className={input} />
           </div>
 
           <div>

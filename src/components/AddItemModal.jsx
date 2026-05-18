@@ -68,7 +68,7 @@ export default function AddItemModal({ onClose, onSave, initial }) {
             Cancel
           </button>
           <button type="submit" form="add-item-form" className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
-            {initial ? 'Save Changes' : 'Add to Kitchen'}
+            {initial ? 'Save Changes' : 'Add to Pantry'}
           </button>
         </>
       }
