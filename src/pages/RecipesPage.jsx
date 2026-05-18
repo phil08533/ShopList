@@ -46,6 +46,7 @@ export default function RecipesPage({
   setMeal,
   clearWeek,
   setPeople,
+  unitSystem = 'us',
 }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const [searchTarget, setSearchTarget] = useState(null); // { dayIndex, slot }
@@ -228,6 +229,7 @@ export default function RecipesPage({
           kitchen={kitchen}
           onAddToShoppingList={handleAddToShoppingList}
           onClose={() => setShowSummary(false)}
+          unitSystem={unitSystem}
         />
       )}
     </div>

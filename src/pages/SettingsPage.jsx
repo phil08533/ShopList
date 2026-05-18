@@ -74,11 +74,38 @@ export default function SettingsPage({ household, settings, onUpdateHousehold, o
           </div>
         </section>
 
-        {/* Smart features */}
+        {/* Preferences */}
         <section className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4">
-          <p className="font-semibold text-gray-800">Smart Features</p>
+          <p className="font-semibold text-gray-800">Preferences</p>
 
-          <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-1">Unit system</p>
+            <p className="text-xs text-gray-400 mb-2">Metric amounts (g, ml) on your shopping list will be shown in your preferred units</p>
+            <div className="flex rounded-xl overflow-hidden border border-gray-200">
+              <button
+                onClick={() => onUpdateSettings({ unitSystem: 'us' })}
+                className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                  (settings.unitSystem ?? 'us') === 'us'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                US (cups, oz, lb)
+              </button>
+              <button
+                onClick={() => onUpdateSettings({ unitSystem: 'metric' })}
+                className={`flex-1 py-2 text-sm font-medium transition-colors border-l border-gray-200 ${
+                  settings.unitSystem === 'metric'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Metric (g, ml, kg)
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
             <div>
               <p className="text-sm font-medium text-gray-700">Auto-add low items</p>
               <p className="text-xs text-gray-400">Automatically add low-stock items to shopping list</p>

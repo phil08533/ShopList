@@ -60,6 +60,7 @@ export default function App() {
             onAdd={(item) => addShoppingItem(item)}
             onMoveToKitchen={moveCheckedToKitchen}
             onClearChecked={clearCheckedFromShopping}
+            unitSystem={state.settings.unitSystem ?? 'us'}
           />
         )}
         {tab === 'meals' && (
@@ -72,6 +73,7 @@ export default function App() {
             setMeal={setMeal}
             clearWeek={clearWeek}
             setPeople={setPeople}
+            unitSystem={state.settings.unitSystem ?? 'us'}
           />
         )}
         {tab === 'analytics' && (

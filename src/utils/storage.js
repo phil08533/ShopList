@@ -11,6 +11,7 @@ const DEFAULT_STATE = {
   },
   settings: {
     autoAddThreshold: true,
+    unitSystem: 'us',
   },
   nextId: 1,
 };

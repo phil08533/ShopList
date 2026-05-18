@@ -11,6 +11,7 @@ export default function ShoppingPage({
   onAdd,
   onMoveToKitchen,
   onClearChecked,
+  unitSystem = 'us',
 }) {
   const [shoppingMode, setShoppingMode] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -125,6 +126,7 @@ export default function ShoppingPage({
                       onToggle={onToggle}
                       onRemove={onRemove}
                       shoppingMode={shoppingMode}
+                      unitSystem={unitSystem}
                     />
                   ))}
                 </div>
@@ -147,6 +149,7 @@ export default function ShoppingPage({
                       onToggle={onToggle}
                       onRemove={onRemove}
                       shoppingMode={shoppingMode}
+                      unitSystem={unitSystem}
                     />
                   ))}
                 </div>

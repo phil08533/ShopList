@@ -1,5 +1,6 @@
 import { X, CheckCircle, XCircle, AlertCircle, ShoppingCart } from 'lucide-react';
 import { scaleMeasure } from '../utils/mealdb';
+import { convertMeasure } from '../utils/units';
 
 const SLOTS = ['breakfast', 'lunch', 'dinner'];
 
@@ -165,11 +166,13 @@ function splitMeasure(measure) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToShoppingList, onClose }) {
+export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToShoppingList, onClose, unitSystem = 'us' }) {
   const grouped = groupIngredients(plan, people);
 
+  const cv = (s) => convertMeasure(s, unitSystem);
+
   const items = grouped.map(({ displayName, measures, meals }) => {
-    const totalMeasure = sumMeasures(measures);
+    const totalMeasure = cv(sumMeasures(measures));
     const kitchenMatch = findKitchenMatch(displayName, kitchen);
 
     if (!kitchenMatch) {
@@ -185,7 +188,7 @@ export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToS
     if (fullyMet) {
       return { displayName, totalMeasure, netMeasure: null, status: 'have', haveLabel, meals };
     }
-    return { displayName, totalMeasure, netMeasure: net ?? totalMeasure, status: 'partial', haveLabel, meals };
+    return { displayName, totalMeasure, netMeasure: cv(net) ?? totalMeasure, status: 'partial', haveLabel, meals };
   });
 
   const needItems = items.filter(i => i.status === 'need');
