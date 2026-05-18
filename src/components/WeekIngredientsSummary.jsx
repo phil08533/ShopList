@@ -132,13 +132,13 @@ function findKitchenMatch(name, kitchen) {
 // ── Ingredient grouping ───────────────────────────────────────────────────────
 
 function groupIngredients(plan, people) {
-  const factor = people / 2;
   const groups = {};
 
   plan.forEach(day => {
     SLOTS.forEach(slot => {
       const meal = day[slot];
       if (!meal) return;
+      const factor = people / (meal.defaultServings ?? 4);
       (meal.ingredients ?? []).forEach(({ name, measure }) => {
         const key = normalizeName(name);
         if (!groups[key]) groups[key] = { displayName: name.trim(), measures: [], meals: [] };

@@ -3,6 +3,7 @@ import { Plus, ShoppingBag, CheckCircle2, X } from 'lucide-react';
 import ShoppingItemRow from '../components/ShoppingItemRow';
 import Modal from '../components/Modal';
 import { CATEGORIES, UNITS } from '../data/library';
+import { getStoreSection, SECTION_ORDER } from '../utils/storeCategories';
 
 export default function ShoppingPage({
   shoppingList,
@@ -24,11 +25,13 @@ export default function ShoppingPage({
   const grouped = useMemo(() => {
     const groups = {};
     unchecked.forEach(item => {
-      const cat = item.category || 'Other';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(item);
+      const section = getStoreSection(item.name);
+      if (!groups[section]) groups[section] = [];
+      groups[section].push(item);
     });
-    return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
+    return SECTION_ORDER
+      .filter(s => groups[s])
+      .map(s => [s, groups[s]]);
   }, [unchecked]);
 
   const handleMoveToKitchen = () => {

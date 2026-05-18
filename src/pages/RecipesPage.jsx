@@ -228,6 +228,7 @@ export default function RecipesPage({
           addCustomRecipe={addCustomRecipe}
           updateCustomRecipe={updateCustomRecipe}
           deleteCustomRecipe={deleteCustomRecipe}
+          kitchen={kitchen}
         />
       )}
 
