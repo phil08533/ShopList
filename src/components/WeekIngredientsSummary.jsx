@@ -27,6 +27,49 @@ function normalizeUnit(u) {
   return UNIT_MAP[u?.toLowerCase().trim()] ?? u?.toLowerCase().trim() ?? '';
 }
 
+// ── Unit conversion tables ────────────────────────────────────────────────────
+
+const VOL_TO_ML = {
+  ml: 1, milliliter: 1, milliliters: 1,
+  l: 1000, liter: 1000, liters: 1000,
+  tsp: 4.929, teaspoon: 4.929, teaspoons: 4.929,
+  tbsp: 14.787, tbs: 14.787, tablespoon: 14.787, tablespoons: 14.787,
+  'fl oz': 29.574,
+  cup: 236.588, cups: 236.588,
+  pint: 473.176, quart: 946.353, gallon: 3785.41,
+};
+
+const WEIGHT_TO_G = {
+  g: 1, gram: 1, grams: 1,
+  kg: 1000, kilogram: 1000, kilograms: 1000,
+  oz: 28.3495, ounce: 28.3495, ounces: 28.3495,
+  lb: 453.592, lbs: 453.592, pound: 453.592, pounds: 453.592,
+};
+
+const COUNT_LIKE = new Set(['', 'count', 'item', 'item(s)', 'items', 'piece', 'pieces', 'unit', 'units', 'each', 'ea']);
+const CULINARY_UNITS = new Set(['tsp', 'tbsp', 'tbs', 'cup', 'cups', 'teaspoon', 'teaspoons', 'tablespoon', 'tablespoons', 'pinch', 'dash', 'sprig', 'handful', 'fl oz']);
+
+function toML(qty, unit) {
+  const f = VOL_TO_ML[unit?.toLowerCase?.() ?? ''];
+  return f != null ? qty * f : null;
+}
+function toG(qty, unit) {
+  const f = WEIGHT_TO_G[unit?.toLowerCase?.() ?? ''];
+  return f != null ? qty * f : null;
+}
+
+function mlToDisplay(ml) {
+  if (ml >= 1000) return { value: ml / 1000, unit: 'l' };
+  if (ml >= 236) return { value: ml / 236.588, unit: 'cup' };
+  if (ml >= 14.787) return { value: ml / 14.787, unit: 'tbsp' };
+  return { value: ml / 4.929, unit: 'tsp' };
+}
+
+function gToDisplay(g) {
+  if (g >= 453) return { value: g / 453.592, unit: 'lb' };
+  if (g >= 28) return { value: g / 28.3495, unit: 'oz' };
+  return { value: g, unit: 'g' };
+}
 
 // ── Measure parsing ───────────────────────────────────────────────────────────
 
@@ -78,32 +121,56 @@ function sumMeasures(measures) {
   return [...parts, ...[...nonNumeric]].join(' + ') || '';
 }
 
-// Returns { net: string|null, fullyMet: bool } after subtracting kitchen quantity
+// Returns { net: string|null, fullyMet: bool } after subtracting kitchen quantity.
+// Handles cross-unit comparison: "750 ml" covers "2 tbsp" by converting to the same dimension.
 function subtractKitchen(measures, kitchenItem) {
   const haveQty = kitchenItem.quantity != null ? Number(kitchenItem.quantity) : null;
-  const haveUnit = normalizeUnit(kitchenItem.unit ?? '');
+  const haveUnit = (kitchenItem.unit ?? '').toLowerCase().trim();
 
   if (haveQty == null) return { net: null, fullyMet: true }; // unknown qty — assume covered
 
-  // Accumulate needed amounts per unit
+  // Accumulate needed amounts by dimension: vol (ml), weight (g), count, or exact unit
+  let needML = 0, needG = 0, needCount = 0;
   const byUnit = {};
   const nonNumeric = new Set();
+
   for (const m of measures) {
     const { value, unit } = parseMeasure(m);
-    if (value == null) nonNumeric.add(unit || m.trim().toLowerCase());
+    if (value == null) { nonNumeric.add(unit || m.trim().toLowerCase()); continue; }
+    const ml = toML(value, unit);
+    const g = toG(value, unit);
+    if (ml != null) needML += ml;
+    else if (g != null) needG += g;
+    else if (COUNT_LIKE.has(unit)) needCount += value;
     else byUnit[unit] = (byUnit[unit] ?? 0) + value;
   }
 
-  // Subtract kitchen quantity from matching unit bucket
-  if (byUnit[haveUnit] !== undefined) {
-    const remaining = byUnit[haveUnit] - haveQty;
-    if (remaining <= 0) delete byUnit[haveUnit];
-    else byUnit[haveUnit] = remaining;
+  // Subtract kitchen supply in the matching dimension
+  const haveML = toML(haveQty, haveUnit);
+  const haveG = toG(haveQty, haveUnit);
+  const haveCount = COUNT_LIKE.has(haveUnit) ? haveQty : null;
+
+  if (haveML != null && needML > 0) needML = Math.max(0, needML - haveML);
+  else if (haveG != null && needG > 0) needG = Math.max(0, needG - haveG);
+  else if (haveCount != null && needCount > 0) needCount = Math.max(0, needCount - haveCount);
+  else {
+    const haveNorm = normalizeUnit(haveUnit);
+    if (byUnit[haveNorm] !== undefined) {
+      const rem = byUnit[haveNorm] - haveQty;
+      if (rem <= 0) delete byUnit[haveNorm];
+      else byUnit[haveNorm] = rem;
+    }
   }
 
-  const parts = Object.entries(byUnit).map(([unit, total]) =>
-    unit ? `${formatValue(total)} ${unit}` : formatValue(total)
-  );
+  // Reconstruct remaining as display strings
+  const parts = [];
+  if (needML > 0) { const { value, unit } = mlToDisplay(needML); parts.push(`${formatValue(value)} ${unit}`); }
+  if (needG > 0) { const { value, unit } = gToDisplay(needG); parts.push(`${formatValue(value)} ${unit}`); }
+  if (needCount > 0) parts.push(formatValue(needCount));
+  for (const [unit, total] of Object.entries(byUnit)) {
+    parts.push(unit ? `${formatValue(total)} ${unit}` : formatValue(total));
+  }
+
   const net = [...parts, ...[...nonNumeric]].join(' + ');
   return { net: net || null, fullyMet: !net };
 }
@@ -188,12 +255,15 @@ export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToS
   const handleAddMissing = () => {
     toBuyItems.forEach(item => {
       const { qty, unit } = splitMeasure(item.netMeasure);
+      const isCulinary = CULINARY_UNITS.has((unit ?? '').toLowerCase());
       onAddToShoppingList({
         name: item.displayName,
-        quantity: qty,
-        unit,
+        quantity: isCulinary ? 1 : (qty || 1),
+        unit: isCulinary ? 'item(s)' : (unit || 'item(s)'),
         category: 'Other',
-        note: `For: ${item.meals.join(', ')}`,
+        note: isCulinary
+          ? `Recipe needs ${item.netMeasure} · For: ${item.meals.join(', ')}`
+          : `For: ${item.meals.join(', ')}`,
       });
     });
     onClose();
@@ -256,7 +326,7 @@ export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToS
               {haveItems.length > 0 && (
                 <div>
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                    Already in kitchen ({haveItems.length})
+                    Already in pantry ({haveItems.length})
                   </p>
                   <ul className="space-y-2.5">
                     {haveItems.map((item, i) => (
