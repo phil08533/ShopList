@@ -3,7 +3,6 @@ import { Plus, X, Trash2, ShoppingCart, Minus, ChevronLeft, ChevronRight } from 
 import RecipeSearchModal from '../components/RecipeSearchModal';
 import WeekIngredientsSummary from '../components/WeekIngredientsSummary';
 import { getMondayKey } from '../hooks/useWeeklyPlan';
-import { useFavorites } from '../hooks/useFavorites';
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SLOTS = ['breakfast', 'lunch', 'dinner'];
@@ -47,11 +46,17 @@ export default function RecipesPage({
   clearWeek,
   setPeople,
   unitSystem = 'us',
+  favorites = [],
+  toggleFavorite,
+  isFavorite,
+  customRecipes = [],
+  addCustomRecipe,
+  updateCustomRecipe,
+  deleteCustomRecipe,
 }) {
   const [weekOffset, setWeekOffset] = useState(0);
   const [searchTarget, setSearchTarget] = useState(null); // { dayIndex, slot }
   const [showSummary, setShowSummary] = useState(false);
-  const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
   const weekKey = getMondayKey(weekOffset);
   const plan = getWeekPlan(weekKey);
@@ -219,6 +224,10 @@ export default function RecipesPage({
           favorites={favorites}
           toggleFavorite={toggleFavorite}
           isFavorite={isFavorite}
+          customRecipes={customRecipes}
+          addCustomRecipe={addCustomRecipe}
+          updateCustomRecipe={updateCustomRecipe}
+          deleteCustomRecipe={deleteCustomRecipe}
         />
       )}
 

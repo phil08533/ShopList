@@ -30,5 +30,11 @@ export function useFavorites() {
     [favorites]
   );
 
-  return { favorites, toggleFavorite, isFavorite };
+  const importFavorites = useCallback((incoming) => {
+    const next = Array.isArray(incoming) ? incoming : [];
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+    setFavorites(next);
+  }, []);
+
+  return { favorites, toggleFavorite, isFavorite, importFavorites };
 }
