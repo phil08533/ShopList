@@ -47,6 +47,7 @@ export default function RecipesPage({
   clearWeek,
   setPeople,
   unitSystem = 'us',
+  excludeWater = false,
   favorites = [],
   toggleFavorite,
   isFavorite,
@@ -249,9 +250,11 @@ export default function RecipesPage({
 
       {showSummary && (
         <WeekIngredientsSummary
-          plan={plan}
+          initialWeekOffset={weekOffset}
+          getWeekPlan={getWeekPlan}
           people={people}
           kitchen={kitchen}
+          excludeWater={excludeWater}
           onAddToShoppingList={handleAddToShoppingList}
           onClose={() => setShowSummary(false)}
           unitSystem={unitSystem}

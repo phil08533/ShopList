@@ -131,7 +131,7 @@ export function usePantry() {
             unit: shopItem.unit ?? 'item(s)',
             category: shopItem.category ?? 'Other',
             usageDays: shopItem.usageDays ?? 7,
-            threshold: shopItem.threshold ?? 1,
+            threshold: 0,
             lastPurchased: today,
           }];
         }

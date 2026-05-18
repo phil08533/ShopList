@@ -107,6 +107,19 @@ export default function SettingsPage({
               {settings.autoAddThreshold ? <ToggleRight size={36} /> : <ToggleLeft size={36} />}
             </button>
           </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <div>
+              <p className="text-sm font-medium text-gray-700">Exclude water from shopping list</p>
+              <p className="text-xs text-gray-400">Skip water when generating your meal shopping list — use the tap instead</p>
+            </div>
+            <button
+              onClick={() => onUpdateSettings({ excludeWater: !(settings.excludeWater ?? false) })}
+              className={`transition-colors flex-shrink-0 ${(settings.excludeWater ?? false) ? 'text-emerald-600' : 'text-gray-300'}`}
+            >
+              {(settings.excludeWater ?? false) ? <ToggleRight size={36} /> : <ToggleLeft size={36} />}
+            </button>
+          </div>
         </section>
 
         {/* Data */}
