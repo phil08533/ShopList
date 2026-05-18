@@ -70,5 +70,18 @@ export function useWeeklyPlan() {
     setState(prev => ({ ...prev, people: Math.max(1, n) }));
   }, []);
 
-  return { getWeekPlan, setMeal, clearWeek, people: state.people, setPeople };
+  const importPlans = useCallback((mealsData) => {
+    const next = {
+      plans: mealsData?.plans ?? {},
+      people: mealsData?.people ?? 2,
+    };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+    setState(next);
+  }, []);
+
+  return {
+    getWeekPlan, setMeal, clearWeek, setPeople, importPlans,
+    people: state.people,
+    plans: state.plans,
+  };
 }

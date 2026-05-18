@@ -1,30 +1,20 @@
-import { useState } from 'react';
-import { Download, Upload, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
-import { exportJSON, importJSON } from '../utils/storage';
+import { Download, Upload, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const FREQUENCIES = ['daily', 'twice-weekly', 'weekly', 'biweekly', 'monthly'];
 
-export default function SettingsPage({ household, settings, onUpdateHousehold, onUpdateSettings, onImport, fullState }) {
-  const [importError, setImportError] = useState('');
-  const [imported, setImported] = useState(false);
-
+export default function SettingsPage({
+  household,
+  settings,
+  onUpdateHousehold,
+  onUpdateSettings,
+  onSave,
+  onLoad,
+  autoSave,
+  onToggleAutoSave,
+  hasFsa,
+  saveStatus,
+}) {
   const set = (field, val) => onUpdateHousehold({ [field]: val });
-
-  const handleImport = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    importJSON(
-      file,
-      (data) => {
-        onImport(data);
-        setImported(true);
-        setImportError('');
-        setTimeout(() => setImported(false), 3000);
-      },
-      setImportError
-    );
-    e.target.value = '';
-  };
 
   const labelClass = 'block text-sm font-medium text-gray-700 mb-1';
   const selectClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white';
@@ -122,24 +112,56 @@ export default function SettingsPage({ household, settings, onUpdateHousehold, o
         {/* Data */}
         <section className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
           <p className="font-semibold text-gray-800">Data</p>
-          <p className="text-xs text-gray-400">All data is stored locally on your device — no account or cloud needed.</p>
+          <p className="text-xs text-gray-400">
+            All data is stored locally on your device — no account or cloud needed.
+            Save a backup to keep your pantry, meals, and recipes safe.
+          </p>
 
-          <button
-            onClick={() => exportJSON(fullState)}
-            className="w-full flex items-center gap-3 py-3 px-4 bg-gray-50 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100"
-          >
-            <Download size={18} className="text-emerald-600" />
-            Export backup (JSON)
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={onSave}
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 active:bg-emerald-800 transition-colors"
+            >
+              <Download size={16} />
+              Save
+            </button>
+            <button
+              onClick={onLoad}
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 active:bg-gray-300 transition-colors"
+            >
+              <Upload size={16} />
+              Load
+            </button>
+          </div>
 
-          <label className="w-full flex items-center gap-3 py-3 px-4 bg-gray-50 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 cursor-pointer">
-            <Upload size={18} className="text-emerald-600" />
-            Import from backup
-            <input type="file" accept=".json" className="hidden" onChange={handleImport} />
-          </label>
+          {hasFsa && (
+            <div className="flex items-center justify-between pt-1">
+              <div>
+                <p className="text-sm font-medium text-gray-700">Auto-save</p>
+                <p className="text-xs text-gray-400">
+                  {autoSave
+                    ? 'Saving to file automatically whenever data changes'
+                    : 'Toggle to pick a file and save automatically on every change'}
+                </p>
+              </div>
+              <button
+                onClick={onToggleAutoSave}
+                className={`transition-colors flex-shrink-0 ${autoSave ? 'text-emerald-600' : 'text-gray-300'}`}
+              >
+                {autoSave ? <ToggleRight size={36} /> : <ToggleLeft size={36} />}
+              </button>
+            </div>
+          )}
 
-          {importError && <p className="text-xs text-red-500">{importError}</p>}
-          {imported && <p className="text-xs text-emerald-600">Data imported successfully!</p>}
+          {saveStatus === 'saved' && (
+            <p className="text-xs text-emerald-600 font-medium">Saved successfully!</p>
+          )}
+          {saveStatus === 'imported' && (
+            <p className="text-xs text-emerald-600 font-medium">Data imported successfully!</p>
+          )}
+          {saveStatus === 'error' && (
+            <p className="text-xs text-red-500 font-medium">Could not read file — please try again.</p>
+          )}
         </section>
 
         {/* About */}
