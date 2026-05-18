@@ -12,6 +12,9 @@ export function mealPlanWeeksRemaining(item, mealUsage) {
 }
 
 export function needsPurchase(item) {
+  // Never re-add something bought today — prevents shopping list churn after "Move to Pantry"
+  const today = new Date().toISOString().split('T')[0];
+  if (item.lastPurchased === today) return false;
   if (item.quantity <= item.threshold) return true;
   const days = daysRemaining(item);
   if (days !== null && days <= 1) return true;

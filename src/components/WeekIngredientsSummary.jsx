@@ -1,7 +1,9 @@
-import { X, CheckCircle, XCircle, AlertCircle, ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
+import { X, CheckCircle, XCircle, AlertCircle, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { scaleMeasure } from '../utils/mealdb';
 import { convertMeasure } from '../utils/units';
 import { normalizeName } from '../utils/normalize';
+import { getMondayKey } from '../hooks/useWeeklyPlan';
 
 const SLOTS = ['breakfast', 'lunch', 'dinner'];
 
@@ -187,7 +189,7 @@ function findKitchenMatch(name, kitchen) {
 
 // ── Ingredient grouping ───────────────────────────────────────────────────────
 
-function groupIngredients(plan, people) {
+function groupIngredients(plan, people, excludeWater = false) {
   const groups = {};
 
   plan.forEach(day => {
@@ -197,6 +199,8 @@ function groupIngredients(plan, people) {
       const factor = people / (meal.defaultServings ?? 4);
       (meal.ingredients ?? []).forEach(({ name, measure }) => {
         const key = normalizeName(name);
+        if (!key) return;
+        if (excludeWater && key === 'water') return;
         if (!groups[key]) groups[key] = { displayName: name.trim(), measures: [], meals: [] };
         groups[key].measures.push(scaleMeasure(measure, factor));
         if (!groups[key].meals.includes(meal.mealName)) groups[key].meals.push(meal.mealName);
@@ -205,6 +209,18 @@ function groupIngredients(plan, people) {
   });
 
   return Object.values(groups).sort((a, b) => a.displayName.localeCompare(b.displayName));
+}
+
+function weekShortLabel(offset) {
+  if (offset === 0) return 'This Week';
+  if (offset === 1) return 'Next Week';
+  if (offset === -1) return 'Last Week';
+  const monStr = getMondayKey(offset);
+  const mon = new Date(monStr + 'T12:00:00');
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${fmt(mon)} – ${fmt(sun)}`;
 }
 
 // Split a display measure like "2 lb" or "3/4 cup" into { qty, unit }
@@ -222,8 +238,10 @@ function splitMeasure(measure) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToShoppingList, onClose, unitSystem = 'us' }) {
-  const grouped = groupIngredients(plan, people);
+export default function WeekIngredientsSummary({ initialWeekOffset = 0, getWeekPlan, people, kitchen, excludeWater = false, onAddToShoppingList, onClose, unitSystem = 'us' }) {
+  const [localOffset, setLocalOffset] = useState(initialWeekOffset);
+  const plan = getWeekPlan(getMondayKey(localOffset));
+  const grouped = groupIngredients(plan, people, excludeWater);
 
   const cv = (s) => convertMeasure(s, unitSystem);
 
@@ -272,16 +290,33 @@ export default function WeekIngredientsSummary({ plan, people, kitchen, onAddToS
   return (
     <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/40">
       <div className="w-full max-w-lg bg-white rounded-t-2xl flex flex-col" style={{ maxHeight: '90dvh' }}>
-        <div className="flex items-center justify-between px-4 pt-4 pb-3 flex-shrink-0 border-b border-gray-100">
-          <div>
+        <div className="flex-shrink-0 border-b border-gray-100">
+          <div className="flex items-center justify-between px-4 pt-4 pb-2">
             <h2 className="text-lg font-bold text-gray-800">Week's Shopping</h2>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {grouped.length} ingredients · {people} {people === 1 ? 'person' : 'people'}
-            </p>
+            <button onClick={onClose} className="p-2 rounded-xl text-gray-400 hover:bg-gray-100 transition-colors">
+              <X size={20} />
+            </button>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-gray-400 hover:bg-gray-100 transition-colors">
-            <X size={20} />
-          </button>
+          <div className="flex items-center justify-between px-4 pb-3">
+            <button
+              onClick={() => setLocalOffset(o => o - 1)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <div className="text-center">
+              <p className="text-sm font-semibold text-gray-700">{weekShortLabel(localOffset)}</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {grouped.length} ingredient{grouped.length !== 1 ? 's' : ''} · {people} {people === 1 ? 'person' : 'people'}
+              </p>
+            </div>
+            <button
+              onClick={() => setLocalOffset(o => o + 1)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-5">

@@ -231,6 +231,7 @@ export default function App() {
             clearWeek={clearWeek}
             setPeople={setPeople}
             unitSystem={state.settings.unitSystem ?? 'us'}
+            excludeWater={state.settings.excludeWater ?? false}
             favorites={favorites}
             toggleFavorite={toggleFavorite}
             isFavorite={isFavorite}
