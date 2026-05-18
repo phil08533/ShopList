@@ -1,8 +1,10 @@
 import { Trash2 } from 'lucide-react';
+import { convertAmount } from '../utils/units';
 
-export default function ShoppingItemRow({ item, onToggle, onRemove, shoppingMode }) {
+export default function ShoppingItemRow({ item, onToggle, onRemove, shoppingMode, unitSystem = 'us' }) {
   const faded = item.checked ? 'line-through text-gray-400' : '';
-  const hasAmount = item.quantity != null && item.unit && item.unit !== 'item(s)';
+  const { quantity: dispQty, unit: dispUnit } = convertAmount(item.quantity, item.unit, unitSystem);
+  const hasAmount = dispQty != null && dispUnit && dispUnit !== 'item(s)';
 
   return (
     <div
@@ -32,7 +34,7 @@ export default function ShoppingItemRow({ item, onToggle, onRemove, shoppingMode
           <p className={`font-medium text-sm ${faded || 'text-gray-900'}`}>{item.name}</p>
           {hasAmount && (
             <span className={`text-sm ${item.checked ? 'line-through text-gray-300' : 'text-gray-500'}`}>
-              — {item.quantity} {item.unit}
+              — {dispQty} {dispUnit}
             </span>
           )}
         </div>
