@@ -28,6 +28,14 @@ export async function getMealsByCategory(category) {
   return data.meals ?? [];
 }
 
+export async function getMealsByIngredient(ingredient) {
+  const slug = ingredient.toLowerCase().replace(/\s+/g, '_');
+  const res = await fetch(`${BASE}/filter.php?i=${encodeURIComponent(slug)}`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.meals ?? [];
+}
+
 export function parseIngredients(meal) {
   const ingredients = [];
   for (let i = 1; i <= 20; i++) {

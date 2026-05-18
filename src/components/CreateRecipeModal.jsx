@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { CATEGORIES } from '../data/library';
 
 const FOOD_CATEGORIES = [
   'Beef','Breakfast','Chicken','Dessert','Goat','Lamb','Miscellaneous',
@@ -10,6 +9,7 @@ const FOOD_CATEGORIES = [
 export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }) {
   const [name, setName]           = useState(initial?.strMeal ?? '');
   const [category, setCategory]   = useState(initial?.strCategory ?? 'Miscellaneous');
+  const [serves, setServes]       = useState(initial?.serves ?? 4);
   const [instructions, setInstructions] = useState(initial?.strInstructions ?? '');
   const [ingredients, setIngredients] = useState(
     initial?._ingredients?.length ? initial._ingredients : [{ name: '', measure: '' }]
@@ -26,6 +26,7 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
       strArea: 'Custom',
       strInstructions: instructions.trim(),
       strMealThumb: null,
+      serves: Math.max(1, Number(serves) || 4),
       _ingredients: ingredients.filter(r => r.name.trim()),
     });
   };
@@ -49,11 +50,21 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
               placeholder="e.g. Mom's Spaghetti" className={input} />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Category</label>
-            <select value={category} onChange={e => setCategory(e.target.value)} className={input}>
-              {FOOD_CATEGORIES.map(c => <option key={c}>{c}</option>)}
-            </select>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Category</label>
+              <select value={category} onChange={e => setCategory(e.target.value)} className={input}>
+                {FOOD_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Serves</label>
+              <input
+                type="number" min={1} max={20} value={serves}
+                onChange={e => setServes(e.target.value)}
+                className={input}
+              />
+            </div>
           </div>
 
           <div>
