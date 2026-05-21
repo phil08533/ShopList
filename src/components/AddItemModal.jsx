@@ -56,7 +56,7 @@ export default function AddItemModal({ onClose, onSave, initial }) {
   };
 
   const labelClass = 'block text-sm font-medium text-gray-700 mb-1';
-  const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500';
+  const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500';
 
   return (
     <Modal
@@ -67,7 +67,7 @@ export default function AddItemModal({ onClose, onSave, initial }) {
           <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-300 text-sm font-medium text-gray-600">
             Cancel
           </button>
-          <button type="submit" form="add-item-form" className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
+          <button type="submit" form="add-item-form" className="flex-1 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700">
             {initial ? 'Save Changes' : 'Add to Pantry'}
           </button>
         </>
@@ -97,7 +97,7 @@ export default function AddItemModal({ onClose, onSave, initial }) {
                   <button
                     type="button"
                     onMouseDown={() => applyLibraryItem(s)}
-                    className="w-full text-left px-4 py-2.5 hover:bg-emerald-50 text-sm flex items-center justify-between"
+                    className="w-full text-left px-4 py-2.5 hover:bg-primary-50 text-sm flex items-center justify-between"
                   >
                     <span className="font-medium">{s.name}</span>
                     <span className="text-xs text-gray-400">{s.category}</span>

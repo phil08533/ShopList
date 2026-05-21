@@ -46,12 +46,12 @@ export default function ShoppingPage({
     setShowAddModal(false);
   };
 
-  const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500';
+  const inputClass = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500';
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-4 pt-12 pb-4">
+      <div className="bg-white border-b border-gray-100 px-4 pt-4 pb-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Shopping List</h1>
@@ -63,7 +63,7 @@ export default function ShoppingPage({
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md hover:bg-emerald-700"
+            className="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center shadow-md hover:bg-primary-700"
           >
             <Plus size={22} />
           </button>
@@ -75,7 +75,7 @@ export default function ShoppingPage({
             {!shoppingMode ? (
               <button
                 onClick={() => setShoppingMode(true)}
-                className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-emerald-700"
+                className="w-full py-2.5 rounded-xl bg-primary-600 text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-primary-700"
               >
                 <ShoppingBag size={18} /> Start Shopping
               </button>
@@ -90,7 +90,7 @@ export default function ShoppingPage({
                 <button
                   onClick={handleMoveToKitchen}
                   disabled={checkedCount === 0}
-                  className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-40 hover:bg-emerald-700 disabled:hover:bg-emerald-600"
+                  className="flex-1 py-2.5 rounded-xl bg-primary-600 text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-40 hover:bg-primary-700 disabled:hover:bg-primary-600"
                 >
                   <CheckCircle2 size={16} />
                   Move to Pantry {checkedCount > 0 && `(${checkedCount})`}
@@ -172,7 +172,7 @@ export default function ShoppingPage({
               <button onClick={() => setShowAddModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-300 text-sm font-medium text-gray-600">
                 Cancel
               </button>
-              <button onClick={handleAddItem} className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
+              <button onClick={handleAddItem} className="flex-1 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700">
                 Add Item
               </button>
             </>

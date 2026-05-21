@@ -277,7 +277,7 @@ export default function RecipeSearchModal({
             <div className="flex-shrink-0 px-4 pt-3 border-t border-gray-100 bg-white"
               style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
               <button onClick={handleAdd}
-                className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-colors">
+                className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-primary-700 transition-colors">
                 <Plus size={18} /> Add to Plan
               </button>
             </div>
@@ -310,7 +310,7 @@ export default function RecipeSearchModal({
             <h2 className="text-lg font-bold text-gray-800">Find a Recipe</h2>
             <div className="flex items-center gap-1">
               <button onClick={() => { setEditingRecipe(null); setShowCreate(true); }}
-                className="flex items-center gap-1 text-xs text-emerald-600 font-semibold bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1.5 rounded-xl transition-colors">
+                className="flex items-center gap-1 text-xs text-primary-600 font-semibold bg-primary-50 hover:bg-primary-100 px-2.5 py-1.5 rounded-xl transition-colors">
                 <Plus size={13} /> Create
               </button>
               <button onClick={onClose} className="p-2 rounded-xl text-gray-400 hover:bg-gray-100 transition-colors">
@@ -324,7 +324,7 @@ export default function RecipeSearchModal({
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="text" value={query} onChange={e => handleQueryChange(e.target.value)}
                 placeholder="Search meals…"
-                className="w-full pl-9 pr-4 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full pl-9 pr-4 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                 autoFocus />
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function RecipeSearchModal({
                   </button>
                   {categories.map(cat => (
                     <button key={cat.idCategory} onClick={() => handleCategory(cat.strCategory)}
-                      className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${activeCategory === cat.strCategory ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                      className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${activeCategory === cat.strCategory ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                       {cat.strCategory}
                     </button>
                   ))}
@@ -362,7 +362,7 @@ export default function RecipeSearchModal({
 
           <div className="flex-1 overflow-y-auto px-4 pb-4">
             {loadingDetail && (
-              <div className="flex items-center justify-center py-8 gap-2 text-emerald-600">
+              <div className="flex items-center justify-center py-8 gap-2 text-primary-600">
                 <Loader2 size={20} className="animate-spin" /><span className="text-sm">Loading recipe…</span>
               </div>
             )}
@@ -379,10 +379,10 @@ export default function RecipeSearchModal({
             {!loadingDetail && !error && showMyRecipes && (
               <div className="grid grid-cols-2 gap-3">
                 <button onClick={() => { setEditingRecipe(null); setShowCreate(true); }}
-                  className="rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-colors flex flex-col items-center justify-center gap-1.5"
+                  className="rounded-2xl border-2 border-dashed border-primary-200 bg-primary-50 hover:bg-primary-100 transition-colors flex flex-col items-center justify-center gap-1.5"
                   style={{ aspectRatio: '1' }}>
-                  <Plus size={24} className="text-emerald-600" />
-                  <span className="text-xs font-semibold text-emerald-600">New Recipe</span>
+                  <Plus size={24} className="text-primary-600" />
+                  <span className="text-xs font-semibold text-primary-600">New Recipe</span>
                 </button>
                 {customRecipes.map(recipe => (
                   <button key={recipe.idMeal} onClick={() => handleMealTap(recipe.idMeal)}
@@ -424,12 +424,12 @@ export default function RecipeSearchModal({
             )}
 
             {!loadingDetail && !error && !showPrompt && !showMyRecipes && !showPantry && loadingResults && (
-              <div className="flex items-center justify-center py-8 gap-2 text-emerald-600">
+              <div className="flex items-center justify-center py-8 gap-2 text-primary-600">
                 <Loader2 size={20} className="animate-spin" /><span className="text-sm">Loading…</span>
               </div>
             )}
             {showPantry && loadingResults && (
-              <div className="flex flex-col items-center justify-center py-12 gap-3 text-emerald-600">
+              <div className="flex flex-col items-center justify-center py-12 gap-3 text-primary-600">
                 <Loader2 size={24} className="animate-spin" />
                 <span className="text-sm text-gray-500">Finding recipes that match your pantry…</span>
               </div>

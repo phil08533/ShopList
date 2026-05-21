@@ -33,7 +33,7 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
     });
   };
 
-  const input = 'w-full bg-gray-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500';
+  const input = 'w-full bg-gray-100 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500';
 
   return (
     <div className="fixed inset-0 z-[300] flex items-end justify-center bg-black/40">
@@ -79,9 +79,9 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
               {ingredients.map((row, i) => (
                 <div key={i} className="flex gap-2 items-center">
                   <input value={row.measure} onChange={e => setIng(i, 'measure', e.target.value)}
-                    placeholder="Amount" className="w-24 flex-shrink-0 bg-gray-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    placeholder="Amount" className="w-24 flex-shrink-0 bg-gray-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
                   <input value={row.name} onChange={e => setIng(i, 'name', e.target.value)}
-                    placeholder="Ingredient" className="flex-1 bg-gray-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    placeholder="Ingredient" className="flex-1 bg-gray-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
                   {ingredients.length > 1 && (
                     <button onClick={() => setIngredients(p => p.filter((_, j) => j !== i))}
                       className="p-2 text-gray-300 hover:text-red-400 flex-shrink-0">
@@ -91,7 +91,7 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
                 </div>
               ))}
               <button onClick={() => setIngredients(p => [...p, { name: '', measure: '' }])}
-                className="flex items-center gap-1.5 text-sm text-emerald-600 font-medium hover:bg-emerald-50 px-2 py-1.5 rounded-lg transition-colors">
+                className="flex items-center gap-1.5 text-sm text-primary-600 font-medium hover:bg-primary-50 px-2 py-1.5 rounded-lg transition-colors">
                 <Plus size={15} /> Add ingredient
               </button>
             </div>
@@ -115,7 +115,7 @@ export default function CreateRecipeModal({ onClose, onSave, onDelete, initial }
         <div className="flex-shrink-0 px-4 pt-3 border-t border-gray-100 bg-white"
           style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
           <button onClick={handleSave} disabled={!name.trim()}
-            className="w-full py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 disabled:opacity-40 transition-colors">
+            className="w-full py-3 rounded-xl bg-primary-600 text-white font-semibold text-sm hover:bg-primary-700 disabled:opacity-40 transition-colors">
             {initial ? 'Save Changes' : 'Create Recipe'}
           </button>
         </div>
