@@ -1,8 +1,55 @@
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
+/* ── Theme color tokens ──────────────────────────────────────────────────────
+   bg-primary-50/100/500/600/700 etc. respond to [data-theme] on <html>.
+   Status colors (emerald=good, amber=low, red=critical) are NOT themed.
+─────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  --color-primary-50:  #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
 }
+
+html[data-theme="ocean"] {
+  --color-primary-50:  #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+}
+
+html[data-theme="violet"] {
+  --color-primary-50:  #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-500: #8b5cf6;
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+}
+
+html[data-theme="rose"] {
+  --color-primary-50:  #fff1f2;
+  --color-primary-100: #ffe4e6;
+  --color-primary-500: #f43f5e;
+  --color-primary-600: #e11d48;
+  --color-primary-700: #be123c;
+}
+
+html[data-theme="amber"] {
+  --color-primary-50:  #fffbeb;
+  --color-primary-100: #fef3c7;
+  --color-primary-500: #f59e0b;
+  --color-primary-600: #d97706;
+  --color-primary-700: #b45309;
+}
+
+:root {
+  --app-bar-height: calc(56px + env(safe-area-inset-top, 0px));
+}
+
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -10,6 +57,7 @@ body {
   background-color: #f8fafc;
 }
 
-#root {
-  min-height: 100svh;
-}
+#root { min-height: 100svh; }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

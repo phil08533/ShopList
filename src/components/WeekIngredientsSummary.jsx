@@ -390,7 +390,7 @@ export default function WeekIngredientsSummary({ initialWeekOffset = 0, getWeekP
           >
             <button
               onClick={handleAddMissing}
-              className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-primary-700 transition-colors"
             >
               <ShoppingCart size={18} />
               Add {toBuyItems.length} item{toBuyItems.length !== 1 ? 's' : ''} to shopping list

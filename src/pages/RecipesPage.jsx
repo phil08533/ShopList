@@ -85,12 +85,12 @@ export default function RecipesPage({
   return (
     <div className="pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 pt-5 pb-3">
+      <div className="sticky z-10 bg-white border-b border-gray-100 px-4 pt-3 pb-3" style={{ top: 'var(--app-bar-height)' }}>
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-2xl font-bold text-gray-900">Meals</h1>
           <button
             onClick={() => setShowSummary(true)}
-            className="flex items-center gap-1.5 bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-semibold hover:bg-emerald-700 transition-colors"
+            className="flex items-center gap-1.5 bg-primary-600 text-white px-3 py-2 rounded-xl text-xs font-semibold hover:bg-primary-700 transition-colors"
           >
             <ShoppingCart size={14} />
             Week's List
@@ -155,20 +155,20 @@ export default function RecipesPage({
             <div
               key={dayIndex}
               className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${
-                todayFlag ? 'border-emerald-400' : 'border-gray-100'
+                todayFlag ? 'border-primary-400' : 'border-gray-100'
               }`}
             >
               <div
                 className={`px-3 py-2 flex items-center justify-between ${
-                  todayFlag ? 'bg-emerald-50' : 'bg-gray-50'
+                  todayFlag ? 'bg-primary-50' : 'bg-gray-50'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className={`text-sm font-bold ${todayFlag ? 'text-emerald-700' : 'text-gray-700'}`}>
+                  <span className={`text-sm font-bold ${todayFlag ? 'text-primary-700' : 'text-gray-700'}`}>
                     {DAY_NAMES[dayIndex]}
                   </span>
                   {todayFlag && (
-                    <span className="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-full font-semibold">
+                    <span className="text-[10px] bg-primary-600 text-white px-1.5 py-0.5 rounded-full font-semibold">
                       Today
                     </span>
                   )}
@@ -192,7 +192,7 @@ export default function RecipesPage({
                           >
                             {meal.thumb
                               ? <img src={meal.thumb} alt={meal.mealName} className="w-9 h-9 rounded-lg object-cover flex-shrink-0" />
-                              : <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-600 font-bold text-sm">{meal.mealName.charAt(0)}</div>
+                              : <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 text-primary-600 font-bold text-sm">{meal.mealName.charAt(0)}</div>
                             }
                             <span className="text-sm font-medium text-gray-800 flex-1 truncate">
                               {meal.mealName}
@@ -208,7 +208,7 @@ export default function RecipesPage({
                       ) : (
                         <button
                           onClick={() => setSearchTarget({ dayIndex, slot })}
-                          className="flex items-center gap-1 text-xs text-emerald-600 font-medium hover:bg-emerald-50 px-2 py-1 rounded-lg transition-colors"
+                          className="flex items-center gap-1 text-xs text-primary-600 font-medium hover:bg-primary-50 px-2 py-1 rounded-lg transition-colors"
                         >
                           <Plus size={13} />
                           Add

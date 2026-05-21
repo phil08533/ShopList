@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import NavBar from './components/NavBar';
+import Guide from './components/Guide';
+import HomePage from './pages/HomePage';
 import KitchenPage from './pages/KitchenPage';
 import ShoppingPage from './pages/ShoppingPage';
-import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
 import RecipesPage from './pages/RecipesPage';
 import { usePantry } from './hooks/usePantry';
@@ -30,40 +31,26 @@ function triggerDownload(json) {
 }
 
 export default function App() {
-  const [tab, setTab] = useState('kitchen');
-  const [saveStatus, setSaveStatus] = useState(''); // 'saved' | 'imported' | 'error' | ''
+  const [tab, setTab] = useState('home');
+  const [saveStatus, setSaveStatus] = useState('');
   const [autoSave, setAutoSave] = useState(() => {
     try { return JSON.parse(localStorage.getItem('smart_pantry_autosave') ?? 'false'); } catch { return false; }
+  });
+  const [showGuide, setShowGuide] = useState(() => {
+    try { return !JSON.parse(localStorage.getItem('smart_pantry_guide_seen') ?? 'false'); } catch { return true; }
   });
   const fileHandleRef = useRef(null);
 
   const {
     state,
-    addKitchenItem,
-    updateKitchenItem,
-    removeKitchenItem,
-    addShoppingItem,
-    toggleShoppingItem,
-    removeShoppingItem,
-    clearCheckedFromShopping,
-    moveCheckedToKitchen,
-    updateHousehold,
-    updateSettings,
-    importState,
+    addKitchenItem, updateKitchenItem, removeKitchenItem,
+    addShoppingItem, toggleShoppingItem, removeShoppingItem,
+    clearCheckedFromShopping, moveCheckedToKitchen,
+    updateHousehold, updateSettings, importState,
   } = usePantry();
 
-  const {
-    getWeekPlan,
-    setMeal,
-    clearWeek,
-    people,
-    setPeople,
-    plans,
-    importPlans,
-  } = useWeeklyPlan();
-
+  const { getWeekPlan, setMeal, clearWeek, people, setPeople, plans, importPlans } = useWeeklyPlan();
   const { favorites, toggleFavorite, isFavorite, importFavorites } = useFavorites();
-
   const {
     recipes: customRecipes,
     addRecipe: addCustomRecipe,
@@ -72,12 +59,18 @@ export default function App() {
     importRecipes,
   } = useCustomRecipes();
 
+  // Apply theme to <html> element
+  const theme = state.settings.theme ?? 'emerald';
+  useEffect(() => {
+    if (theme === 'emerald') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+  }, [theme]);
+
   const buildSnapshot = useCallback(() => ({
-    version: 2,
-    pantry: state,
-    meals: { plans, people },
-    favorites,
-    customRecipes,
+    version: 2, pantry: state, meals: { plans, people }, favorites, customRecipes,
   }), [state, plans, people, favorites, customRecipes]);
 
   const handleSave = useCallback(async () => {
@@ -125,12 +118,8 @@ export default function App() {
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        try {
-          handleImportAll(JSON.parse(ev.target.result));
-        } catch {
-          setSaveStatus('error');
-          setTimeout(() => setSaveStatus(''), 3000);
-        }
+        try { handleImportAll(JSON.parse(ev.target.result)); }
+        catch { setSaveStatus('error'); setTimeout(() => setSaveStatus(''), 3000); }
       };
       reader.readAsText(file);
     };
@@ -151,9 +140,7 @@ export default function App() {
           localStorage.setItem('smart_pantry_autosave', 'true');
           setSaveStatus('saved');
           setTimeout(() => setSaveStatus(''), 2500);
-        } catch (e) {
-          // User cancelled picker — don't enable auto-save
-        }
+        } catch {}
       }
     } else {
       setAutoSave(false);
@@ -162,43 +149,64 @@ export default function App() {
     }
   }, [autoSave, buildSnapshot]);
 
-  // Debounced auto-save
   useEffect(() => {
     if (!autoSave || !fileHandleRef.current) return;
-    const snapshot = {
-      version: 2,
-      pantry: state,
-      meals: { plans, people },
-      favorites,
-      customRecipes,
-    };
-    const json = JSON.stringify(snapshot, null, 2);
+    const json = JSON.stringify({ version: 2, pantry: state, meals: { plans, people }, favorites, customRecipes }, null, 2);
     const timer = setTimeout(async () => {
-      try {
-        await writeToHandle(fileHandleRef.current, json);
-      } catch {
-        // Handle may have been revoked; clear it so next save re-picks
-        fileHandleRef.current = null;
-        setAutoSave(false);
-        localStorage.setItem('smart_pantry_autosave', 'false');
-      }
+      try { await writeToHandle(fileHandleRef.current, json); }
+      catch { fileHandleRef.current = null; setAutoSave(false); localStorage.setItem('smart_pantry_autosave', 'false'); }
     }, 1500);
     return () => clearTimeout(timer);
   }, [state, plans, people, favorites, customRecipes, autoSave]);
 
-  const weeklyUsage = useMemo(
-    () => computeWeeklyUsage(plans, people),
-    [plans, people]
-  );
+  const weeklyUsage = useMemo(() => computeWeeklyUsage(plans, people), [plans, people]);
 
   const handleAddToShopping = (item) => {
-    const alreadyOnList = state.shoppingList.some(s => s.kitchenId === item.kitchenId);
-    if (!alreadyOnList) addShoppingItem(item);
+    if (!state.shoppingList.some(s => s.kitchenId === item.kitchenId)) addShoppingItem(item);
+  };
+
+  const handleGuideClose = () => {
+    setShowGuide(false);
+    localStorage.setItem('smart_pantry_guide_seen', 'true');
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="max-w-lg mx-auto min-h-screen flex flex-col">
+      {/* Fixed top app bar */}
+      <div
+        className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      >
+        <div className="max-w-lg mx-auto h-14 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🥦</span>
+            <span className="text-base font-bold text-gray-900">Smart Pantry</span>
+          </div>
+          <button
+            onClick={() => setShowGuide(true)}
+            className="w-8 h-8 rounded-full bg-primary-50 text-primary-600 font-bold text-sm flex items-center justify-center hover:bg-primary-100 transition-colors"
+            aria-label="Open guide"
+          >
+            ?
+          </button>
+        </div>
+      </div>
+
+      {/* Main content — offset by app bar height */}
+      <main
+        className="max-w-lg mx-auto min-h-screen flex flex-col"
+        style={{ paddingTop: 'var(--app-bar-height)' }}
+      >
+        {tab === 'home' && (
+          <HomePage
+            kitchen={state.kitchen}
+            shoppingList={state.shoppingList}
+            getWeekPlan={getWeekPlan}
+            people={people}
+            weeklyUsage={weeklyUsage}
+            onNavigate={setTab}
+          />
+        )}
         {tab === 'kitchen' && (
           <KitchenPage
             kitchen={state.kitchen}
@@ -241,12 +249,6 @@ export default function App() {
             deleteCustomRecipe={deleteCustomRecipe}
           />
         )}
-        {tab === 'analytics' && (
-          <AnalyticsPage
-            kitchen={state.kitchen}
-            shoppingList={state.shoppingList}
-          />
-        )}
         {tab === 'settings' && (
           <SettingsPage
             household={state.household}
@@ -263,11 +265,9 @@ export default function App() {
         )}
       </main>
 
-      <NavBar
-        active={tab}
-        onChange={setTab}
-        shoppingCount={state.shoppingList.length}
-      />
+      <NavBar active={tab} onChange={setTab} shoppingCount={state.shoppingList.filter(i => !i.checked).length} />
+
+      {showGuide && <Guide onClose={handleGuideClose} />}
     </div>
   );
 }

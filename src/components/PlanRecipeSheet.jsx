@@ -71,7 +71,7 @@ export default function PlanRecipeSheet({ meal, people, onClose, onRemove }) {
             >
               <span>Instructions</span>
               {loadingInstr
-                ? <Loader2 size={16} className="animate-spin text-emerald-600" />
+                ? <Loader2 size={16} className="animate-spin text-primary-600" />
                 : showInstr ? <ChevronUp size={16} /> : <ChevronDown size={16} />
               }
             </button>

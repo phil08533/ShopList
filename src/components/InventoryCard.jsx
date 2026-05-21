@@ -59,7 +59,7 @@ export default function InventoryCard({ item, onEdit, onRemove, onAddToShopping,
             <span className="text-xs text-gray-400 flex-1 truncate">{subText}</span>
             <button
               onClick={() => onAddToShopping(item)}
-              className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition-colors"
+              className="p-1.5 rounded-lg text-primary-600 hover:bg-primary-50 transition-colors"
               title="Add to shopping list"
             >
               <ShoppingCart size={14} />

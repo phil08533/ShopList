@@ -1,16 +1,19 @@
-import { ShoppingCart, Package2, BarChart2, Settings, UtensilsCrossed } from 'lucide-react';
+import { ShoppingCart, Package2, Settings, UtensilsCrossed, Home } from 'lucide-react';
 
 const tabs = [
-  { id: 'kitchen', label: 'Pantry', Icon: Package2 },
-  { id: 'meals',   label: 'Meals',   Icon: UtensilsCrossed },
+  { id: 'home',     label: 'Home',     Icon: Home },
+  { id: 'kitchen',  label: 'Pantry',   Icon: Package2 },
+  { id: 'meals',    label: 'Meals',    Icon: UtensilsCrossed },
   { id: 'shopping', label: 'Shopping', Icon: ShoppingCart },
-  { id: 'analytics', label: 'Analytics', Icon: BarChart2 },
   { id: 'settings', label: 'Settings', Icon: Settings },
 ];
 
 export default function NavBar({ active, onChange, shoppingCount }) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
       {tabs.map(({ id, label, Icon }) => {
         const isActive = active === id;
         return (
@@ -18,7 +21,7 @@ export default function NavBar({ active, onChange, shoppingCount }) {
             key={id}
             onClick={() => onChange(id)}
             className={`flex-1 flex flex-col items-center py-2 gap-0.5 text-xs font-medium transition-colors ${
-              isActive ? 'text-emerald-600' : 'text-gray-400'
+              isActive ? 'text-primary-600' : 'text-gray-400'
             }`}
           >
             <div className="relative">

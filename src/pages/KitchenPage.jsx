@@ -76,7 +76,7 @@ export default function KitchenPage({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-4 pt-12 pb-3 space-y-3">
+      <div className="bg-white border-b border-gray-100 px-4 pt-4 pb-3 space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Pantry</h1>
@@ -84,7 +84,7 @@ export default function KitchenPage({
           </div>
           <button
             onClick={() => { setEditItem(null); setShowModal(true); }}
-            className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md hover:bg-emerald-700"
+            className="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center shadow-md hover:bg-primary-700"
           >
             <Plus size={22} />
           </button>
@@ -128,7 +128,7 @@ export default function KitchenPage({
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
-            className="w-full bg-gray-100 rounded-xl pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full bg-gray-100 rounded-xl pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="Search items..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -146,7 +146,7 @@ export default function KitchenPage({
             <button
               onClick={() => setFilterCat('All')}
               className={`flex-shrink-0 text-xs px-3 py-1 rounded-full font-medium transition-colors ${
-                filterCat === 'All' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600'
+                filterCat === 'All' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600'
               }`}
             >
               All
@@ -156,7 +156,7 @@ export default function KitchenPage({
                 key={cat}
                 onClick={() => setFilterCat(cat)}
                 className={`flex-shrink-0 text-xs px-3 py-1 rounded-full font-medium transition-colors ${
-                  filterCat === cat ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600'
+                  filterCat === cat ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 {cat}
